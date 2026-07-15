@@ -95,8 +95,10 @@ class MainViewModel(
     fun importWishlist(raw: String, onDone: () -> Unit = {}) = launchBusy {
         val result = container.repository.importFromText(raw)
         val suffix = buildString {
+            if (result.sourceLists > 0) append(" · ${result.sourceLists} listas procesadas")
             if (result.failed > 0) append(" · ${result.failed} fallaron")
-            if (result.ignored > 0) append(" · ${result.ignored} líneas ignoradas")
+            if (result.ignored > 0) append(" · ${result.ignored} elementos ignorados")
+            result.errors.firstOrNull()?.let { append(" · $it") }
         }
         _messages.emit("Importación: ${result.added} nuevos, ${result.updated} actualizados$suffix.")
         onDone()

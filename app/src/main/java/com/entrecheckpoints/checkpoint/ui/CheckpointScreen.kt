@@ -759,7 +759,7 @@ private fun SystemScreen(
                     OutlinedButton(onClick = onBulkImport, shape = checkpointShape(), modifier = Modifier.weight(1f)) {
                         Icon(Icons.Default.FileUpload, contentDescription = null)
                         Spacer(Modifier.width(5.dp))
-                        Text("WISHLIST")
+                        Text("IMPORTAR")
                     }
                     OutlinedButton(onClick = onImportBackup, shape = checkpointShape(), modifier = Modifier.weight(1f)) {
                         Icon(Icons.Default.Download, contentDescription = null)
@@ -1224,14 +1224,14 @@ private fun BulkImportDialog(busy: Boolean, onDismiss: () -> Unit, onImport: (St
     AlertDialog(
         onDismissRequest = onDismiss,
         shape = checkpointShape(),
-        title = { Text("IMPORTAR WISHLIST") },
+        title = { Text("IMPORTACIÓN MASIVA") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Pega varios enlaces, App IDs de Steam o una wishlist pública. Checkpoint agregará lo que pueda leer sin pedirte cuentas.")
+                Text("Steam: pega una wishlist pública, App IDs o enlaces. Nintendo: pega el enlace compartido /wish-list/share/. Mantén la app abierta mientras carga. Xbox: usa enlaces individuales.")
                 OutlinedTextField(
                     value = raw,
                     onValueChange = { raw = it },
-                    label = { Text("Enlaces o IDs, uno por línea") },
+                    label = { Text("Wishlist de Steam o Nintendo, enlaces o App IDs") },
                     modifier = Modifier.fillMaxWidth().heightIn(min = 150.dp),
                     shape = checkpointShape(),
                 )

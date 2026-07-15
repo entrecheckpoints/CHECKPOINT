@@ -1,45 +1,79 @@
-# Checkpoint by Entre Checkpoints — Android 1.0.0
+# Checkpoint by Entre Checkpoints — Android 1.0.3
 
 Checkpoint es una aplicación Android nativa para vigilar precios de videojuegos en **Nintendo eShop, Steam y Xbox Store**, comparar tiendas, administrar una biblioteca personal y recibir alertas inteligentes.
 
-La versión 1.0 convierte el inicio en una **portada editorial dinámica** inspirada en las revistas de videojuegos de mediados de los 2000. No es una imagen estática: se construye con los juegos, precios, descuentos, objetivos, eventos e historial guardados en el teléfono.
+La versión 1.0 presenta la información como una **portada editorial dinámica** inspirada en revistas de videojuegos de mediados de los 2000. La portada se construye con juegos, precios, descuentos, objetivos, eventos e historial guardados en el teléfono; no es una imagen estática colocada encima de una app convencional con peluca.
 
-Checkpoint funciona de manera local, no requiere cuentas, no incluye telemetría y no se sincroniza con la extensión de Chrome.
+Checkpoint funciona localmente, no requiere una cuenta propia, no incluye telemetría y no se sincroniza con la extensión de Chrome.
 
 ![Concepto de la portada dinámica de Checkpoint 1.0](docs/checkpoint-v1-magazine-concept.png)
 
-## Checkpoint 1.0 — Live Magazine Edition
+## Novedad en 1.0.3: wishlists de Steam y Nintendo
+
+Checkpoint puede importar:
+
+### Steam
+
+- Wishlist pública con `store.steampowered.com/wishlist/profiles/...`.
+- Wishlist pública con `store.steampowered.com/wishlist/id/...`.
+- Perfil público de Steam Community.
+- App IDs, uno por línea.
+- JSON copiado desde una respuesta de wishlist.
+- Enlaces individuales de productos.
+
+La wishlist debe estar configurada como pública.
+
+### Nintendo
+
+- Enlaces oficiales compartidos con la ruta:
+
+```text
+https://www.nintendo.com/es-mx/wish-list/share/#skus=...
+```
+
+Checkpoint lee del enlace:
+
+- SKU de cada producto.
+- Región e idioma de la tienda.
+- Orden original de los productos.
+- Fecha incluida en la captura compartida.
+
+Como Nintendo genera los productos mediante JavaScript, Checkpoint abre temporalmente esa página pública en un WebView aislado, activa la carga diferida y obtiene los enlaces reales de cada ficha. No solicita usuario ni contraseña. Mantén la app abierta mientras termina la importación, especialmente con listas grandes.
+
+### Xbox
+
+Xbox continúa admitiendo enlaces individuales. Su wishlist no se importa automáticamente.
+
+## Live Magazine Edition
 
 Al abrir la aplicación, Inicio muestra una portada viva con:
 
 - Masthead `CHECKPOINT by ENTRE CHECKPOINTS`.
-- Número de edición diario y código de barras generado localmente.
-- Juego de portada elegido según Deal Score, eventos recientes, descuento y objetivos.
-- Titulares automáticos como `NEW HISTORICAL LOW`, `TARGET REACHED`, `ENDING SOON` y `BEST DEAL TODAY`.
-- Arte del juego cargado desde su ficha de tienda.
-- Precio actual, precio anterior y porcentaje de descuento.
+- Número de edición diario y código de barras local.
+- Juego destacado según Deal Score, eventos, descuento y objetivos.
+- Titulares como `NEW HISTORICAL LOW`, `TARGET REACHED`, `ENDING SOON` y `BEST DEAL TODAY`.
+- Arte, precio actual, precio anterior y porcentaje de descuento.
 - Nuevas ofertas, objetivos alcanzados y ahorro disponible.
-- Selección horizontal **Best Deals Today**.
-- Panel **Price Pulse** con movimiento agregado de la lista.
-- Acciones compactas para agregar juegos y actualizar precios.
+- Carrusel **Best Deals Today**.
+- Panel **Price Pulse** con movimiento general de la lista.
 
-La interfaz funcional continúa debajo de la portada: búsqueda, filtros y lista completa de seguimiento. Las demás secciones permanecen separadas para evitar convertir la portada en una cabina de avión con ansiedad.
+La búsqueda, los filtros y la lista completa continúan debajo de la portada. Las funciones avanzadas viven en sus propias secciones, lejos de la tradición humana de poner veinte botones en la primera pantalla y esperar armonía.
 
 ## Secciones
 
 - **Inicio:** portada dinámica, ofertas destacadas, Price Pulse y seguimiento.
-- **Ofertas:** feed de bajadas, mínimos, objetivos y promociones activas.
+- **Ofertas:** feed de bajadas, mínimos, objetivos y promociones.
 - **Comparar:** precios del mismo juego y edición entre tiendas.
-- **Biblioteca:** estado, compras, notas, formato, calificación y presupuesto.
-- **Sistema:** temas, automatización, suscripciones, fuentes y respaldos.
+- **Biblioteca:** estados, compras, notas, formato, calificación y presupuesto.
+- **Sistema:** temas, automatización, suscripciones, fuentes, importación y respaldos.
 
-## Funciones
+## Funciones principales
 
 ### Seguimiento y alertas
 
 - Agregar productos mediante URL.
 - Recibir enlaces con **Compartir → Checkpoint** desde Android.
-- Actualización manual y periódica con WorkManager.
+- Actualización manual y periódica mediante WorkManager.
 - Alertas por bajada, objetivo, mínimo, descuento, cantidad reducida y fin de oferta.
 - Conservación del último precio válido cuando una fuente falla.
 
@@ -53,7 +87,7 @@ La interfaz funcional continúa debajo de la portada: búsqueda, filtros y lista
 
 ### Organización
 
-- Wishlist e importación masiva.
+- Importación masiva de listas y enlaces.
 - Biblioteca: deseado, comprado, jugando, terminado y abandonado.
 - Precio pagado, fecha de compra, formato, calificación y notas.
 - Presupuesto mensual y combinación sugerida de compras.
@@ -66,17 +100,13 @@ La interfaz funcional continúa debajo de la portada: búsqueda, filtros y lista
 - Frutiger Aero.
 - Arcade Neon.
 
-La portada de revista se adapta a cada tema, pero siempre utiliza una capa de contraste estable sobre el arte para mantener el precio y los titulares legibles.
+## Actualización
 
-## Actualizar desde 0.3.1
-
-No se modificó el esquema de Room ni el formato de respaldo. Juegos, historial, eventos, objetivos, biblioteca, presupuesto y tema se conservan al instalar el APK con la misma firma.
-
-La versión utiliza:
+No se modificó el esquema de Room ni el formato de respaldo. Juegos, historial, eventos, objetivos, biblioteca, presupuesto y tema se conservan al instalar un APK firmado con la misma clave.
 
 ```text
-versionName 1.0.0
-versionCode 7
+versionName 1.0.3
+versionCode 9
 ```
 
 ## Compilar en GitHub Actions
@@ -85,27 +115,19 @@ versionCode 7
 2. Comprueba que exista `.github/workflows/android.yml`.
 3. Abre **Actions → Build Checkpoint APK**.
 4. Pulsa **Run workflow** o realiza un commit en `main`.
-5. Descarga el artefacto `checkpoint-android-v1.0.0-debug`.
+5. Descarga `checkpoint-android-v1.0.3-debug`.
 6. Extrae `app-debug.apk`.
 
-## Publicar el APK en GitHub Releases
+## Publicar en GitHub Releases
 
 El proyecto incluye `.github/workflows/release-apk.yml`.
 
 1. Abre **Actions → Publicar Checkpoint APK**.
 2. Pulsa **Run workflow**.
-3. Escribe `v1.0.0`.
-4. Al terminar, GitHub crea una Release con:
-   - `Checkpoint.apk`
-   - `Checkpoint.apk.sha256`
+3. Escribe `v1.0.3`.
+4. GitHub crea una Release con `Checkpoint.apk` y `Checkpoint.apk.sha256`.
 
-En el README público puedes utilizar:
-
-```markdown
-[Descargar Checkpoint](https://github.com/entrecheckpoints/CHECKPOINT/releases/latest/download/Checkpoint.apk)
-```
-
-El APK se firma con la clave de desarrollo incluida en el repositorio. Sirve para distribución directa y actualizaciones entre compilaciones de este proyecto, pero no debe utilizarse como firma definitiva para Google Play.
+El APK debug utiliza la clave de desarrollo incluida para permitir actualizaciones entre compilaciones del proyecto. No debe utilizarse como firma definitiva de Google Play.
 
 ## Compilar localmente
 
@@ -134,16 +156,15 @@ APK generado:
 app/build/outputs/apk/debug/app-debug.apk
 ```
 
-## Respaldos
-
-El JSON conserva juegos, historial, eventos, alertas, comparación, biblioteca, suscripciones, presupuesto, intervalo de actualización, notificaciones y tema.
-
 ## Limitaciones
 
-- Xbox continúa en beta porque sus páginas públicas cambian con frecuencia.
+- El importador de Nintendo depende de que la página pública compartida siga exponiendo fichas navegables después de ejecutarse su JavaScript.
+- La importación de una lista grande puede tardar mientras Nintendo carga sus productos y Checkpoint consulta cada ficha.
+- El dispositivo necesita un proveedor Android System WebView habilitado.
+- Xbox continúa en beta y solo admite enlaces individuales para importación masiva.
 - El historial representa los datos reunidos por Checkpoint, no el historial global de SteamDB.
-- El pronóstico requiere varios ciclos reales de precio.
-- Android puede retrasar tareas de WorkManager para ahorrar batería.
-- El ahorro de portada usa una sola moneda, tomada del juego destacado, para no sumar pesos, dólares y yenes como si fueran fichas del mismo arcade.
+- El pronóstico necesita varios ciclos reales de precio.
+- Android puede retrasar WorkManager para ahorrar batería.
+- El ahorro de portada utiliza una sola moneda para no sumar pesos, dólares y yenes como si la contabilidad fuese una sugerencia.
 
-Consulta [CHANGELOG.md](CHANGELOG.md) para el detalle completo de versiones.
+Consulta [CHANGELOG.md](CHANGELOG.md) para el historial completo desde 0.1.0 hasta 1.0.3.

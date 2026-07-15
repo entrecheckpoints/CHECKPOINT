@@ -2,6 +2,64 @@
 
 Este documento registra los cambios funcionales y técnicos de cada versión. El proyecto no incluye sincronización con la extensión de Chrome.
 
+## 1.0.3 — Dual Wishlist Import
+
+### Wishlist compartida de Nintendo
+
+- Se añadió reconocimiento directo de enlaces oficiales con la ruta `/wish-list/share/`.
+- El importador extrae del fragmento de la URL los SKU, la región, el idioma y la fecha incluida por Nintendo.
+- Soporte para listas compartidas de México y para otras rutas regionales con formato `idioma-país`.
+- Los SKU se deduplican conservando el orden original de la lista.
+- Límite preventivo de 500 SKU por enlace compartido.
+- Nuevo `NintendoSharedWishlistResolver`, que abre temporalmente la página pública en un WebView aislado para permitir que el JavaScript oficial hidrate los productos.
+- El resolver recorre la página, activa la carga diferida y recupera enlaces de producto visibles o incrustados en el documento.
+- La importación no requiere credenciales de Nintendo porque trabaja con la página compartida por el usuario.
+- El WebView se destruye al terminar, al cancelar o al alcanzar el tiempo límite.
+- Mensajes específicos para enlaces sin SKU, listas vencidas, errores de red y páginas que no exponen productos.
+
+### Wishlist pública de Steam
+
+- Se conserva la lectura paginada del endpoint público `wishlistdata`.
+- Se mantienen URLs por SteamID, nombres personalizados y perfiles de Steam Community.
+- Se conservan App IDs, JSON copiado y enlaces individuales como métodos alternativos.
+- La detección de Steam se ejecuta antes que la detección de enlaces de producto para evitar tratar una lista como un solo juego.
+
+### Importación y experiencia
+
+- El diálogo ahora identifica explícitamente wishlists de Steam y Nintendo.
+- Se advierte que Nintendo puede tardar mientras la página pública carga todos los productos.
+- El resumen indica cuántas listas fueron procesadas.
+- `líneas ignoradas` se sustituyó por `elementos ignorados`, porque una wishlist no es exactamente una línea y el lenguaje también merece conservar algo de dignidad.
+- Xbox permanece limitado a enlaces individuales.
+
+### Pruebas y mantenimiento
+
+- Nuevas pruebas para región, SKU duplicados, fecha de la lista y enlaces compartidos sin SKU.
+- Nuevas pruebas para normalización de URLs de Nintendo sin eliminar el parámetro `sku`.
+- User-Agent actualizado a Checkpoint 1.0.3.
+- Versión actualizada a `1.0.3` y código `9`.
+- Artefacto de GitHub Actions actualizado a `checkpoint-android-v1.0.3-debug`.
+- Workflow de Releases actualizado a `v1.0.3`.
+- No se modificó el esquema de Room ni el formato de respaldo.
+
+## 1.0.2 — Steam Wishlist Import Fix
+
+- La importación dejó de depender únicamente de los App IDs presentes en el HTML inicial.
+- Se añadió consulta paginada a `wishlistdata` para wishlists públicas de Steam.
+- Compatibilidad con URLs `/wishlist/profiles/<SteamID>/` y `/wishlist/id/<usuario>/`.
+- Conversión automática de perfiles públicos de Steam Community a su wishlist equivalente.
+- Lectura flexible de JSON antiguo, JSON anidado, atributos `appid`, enlaces y claves numéricas.
+- Límite preventivo de 2,000 productos.
+- Mejor detalle del primer error encontrado durante una importación parcial.
+- Versión actualizada a `1.0.2` y código `8`.
+
+## 1.0.1 — Build Hotfix
+
+- Se restauró el archivo raíz `build.gradle.kts` después de que contenido YAML del workflow terminara dentro de él.
+- Se eliminó el import inválido `androidx.compose.foundation.layout.matchParentSize` de `MagazineHome.kt`.
+- Se conservaron las llamadas válidas a `Modifier.matchParentSize()` dentro de `BoxScope`.
+- No se modificaron funciones, datos ni diseño de la portada.
+
 ## 1.0.0 — Live Magazine Edition
 
 ### Portada editorial dinámica

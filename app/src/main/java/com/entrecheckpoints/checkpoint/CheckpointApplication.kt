@@ -6,6 +6,7 @@ import com.entrecheckpoints.checkpoint.data.CheckpointRepository
 import com.entrecheckpoints.checkpoint.data.local.CheckpointDatabase
 import com.entrecheckpoints.checkpoint.data.network.HttpClient
 import com.entrecheckpoints.checkpoint.data.network.StoreRegistry
+import com.entrecheckpoints.checkpoint.data.network.NintendoSharedWishlistResolver
 import com.entrecheckpoints.checkpoint.data.network.WishlistImporter
 import com.entrecheckpoints.checkpoint.notifications.NotificationHelper
 import com.entrecheckpoints.checkpoint.widget.CheckpointWidgetUpdater
@@ -29,7 +30,11 @@ class AppContainer(application: Application) {
     private val stores = StoreRegistry(http)
     private val notifications = NotificationHelper(application, preferences)
     private val widgetUpdater = CheckpointWidgetUpdater(application)
-    private val wishlistImporter = WishlistImporter(http, stores)
+    private val wishlistImporter = WishlistImporter(
+        http = http,
+        stores = stores,
+        nintendoResolver = NintendoSharedWishlistResolver(application),
+    )
     val repository = CheckpointRepository(
         dao = database.checkpointDao(),
         stores = stores,

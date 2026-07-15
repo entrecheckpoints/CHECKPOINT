@@ -1,0 +1,10 @@
+Checkpoint Android 1.0.3 — archivos incluidos en el parche
+
+- Workflows de compilación y Releases actualizados.
+- Versión Android 1.0.3 / código 9.
+- Importador de wishlist pública de Steam.
+- Parser de enlaces Nintendo /wish-list/share/.
+- Resolver temporal mediante Android WebView.
+- Textos de interfaz y resumen de importación.
+- Pruebas unitarias de SKU, región, fecha y URL.
+- README, notas de versión y changelog general 0.1.0–1.0.3.

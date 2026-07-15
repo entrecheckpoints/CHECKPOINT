@@ -15,3 +15,12 @@ Validaciones preparadas para el paquete:
 ## Validación pendiente en GitHub Actions
 
 Este entorno no dispone de Android SDK ni de las dependencias Gradle descargadas. La compilación Android completa debe ejecutarse en GitHub Actions o Android Studio. El workflow incluido instala SDK 35, ejecuta las pruebas y genera el APK.
+
+## Checkpoint 1.0.3
+
+- Parser local validado con enlaces Nintendo `/wish-list/share/`, región `es-mx`, SKU duplicados y fecha.
+- Sintaxis Kotlin de `WishlistImporter` y `NintendoSharedWishlistResolver` comprobada con `kotlinc` y stubs Android.
+- Sintaxis JavaScript del extractor WebView comprobada con Node.js.
+- YAML de GitHub Actions validado.
+- XML de Android validado.
+- La compilación Android completa debe ejecutarse en GitHub Actions porque el entorno de generación no tiene acceso de red para descargar Gradle.

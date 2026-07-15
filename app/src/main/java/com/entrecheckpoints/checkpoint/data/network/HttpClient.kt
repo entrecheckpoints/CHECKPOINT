@@ -19,7 +19,7 @@ class HttpClient {
         connection.setRequestProperty("Accept-Language", "es-MX,es;q=0.9,en;q=0.5")
         connection.setRequestProperty(
             "User-Agent",
-            "Mozilla/5.0 (Linux; Android 15) AppleWebKit/537.36 Chrome/131 Mobile Safari/537.36 Checkpoint/1.0.0",
+            "Mozilla/5.0 (Linux; Android 15) AppleWebKit/537.36 Chrome/131 Mobile Safari/537.36 Checkpoint/1.0.3",
         )
         headers.forEach(connection::setRequestProperty)
         val status = connection.responseCode
