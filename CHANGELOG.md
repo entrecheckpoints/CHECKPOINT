@@ -2,6 +2,66 @@
 
 Este documento registra los cambios funcionales y técnicos de cada versión. El proyecto no incluye sincronización con la extensión de Chrome.
 
+## 1.0.0 — Live Magazine Edition
+
+### Portada editorial dinámica
+
+- Inicio fue rediseñado como una portada de revista de videojuegos inspirada en la era Xbox 360 y mediados de los 2000.
+- La portada se genera con datos reales de la base local; no utiliza una imagen estática como interfaz.
+- Nuevo masthead `CHECKPOINT by ENTRE CHECKPOINTS`.
+- Número de edición calculado según el día del año.
+- Fecha editorial y código de barras generados automáticamente.
+- El juego de portada se elige mediante Deal Score, descuento, objetivos y eventos recientes.
+- Los eventos solo reciben prioridad editorial durante siete días para evitar que una noticia antigua secuestre eternamente la portada.
+- Titulares automáticos para nuevo mínimo, objetivo alcanzado, oferta próxima a terminar, oferta recuperada, gran descuento y mejor oportunidad.
+- Arte de portada cargado desde la ficha del juego con saturación adaptada al tema.
+- Degradados de contraste independientes del tema para proteger la legibilidad del precio y del titular.
+- Color de acento según Nintendo, Steam o Xbox con cálculo de texto blanco o negro legible.
+
+### Resumen diario
+
+- Contador de nuevas ofertas no vistas.
+- Contador de objetivos alcanzados.
+- Ahorro disponible calculado únicamente dentro de la moneda del juego destacado.
+- Indicador de juegos incluidos en suscripciones activas.
+- Acciones de agregar y actualizar integradas discretamente en el masthead.
+
+### Best Deals Today
+
+- Nuevo carrusel editorial de hasta seis juegos.
+- Ordenamiento mediante Deal Score.
+- Portada, descuento, precio y puntaje visibles sin saturar la ficha principal.
+- Acceso directo al feed completo de ofertas.
+
+### Price Pulse
+
+- Nuevo panel de movimiento agregado.
+- Conteo de juegos que bajaron, subieron o permanecieron estables.
+- Indicador de errores de fuente.
+- Gráfica normalizada basada en la relación entre precio actual y precio regular, evitando mezclar monedas directamente.
+
+### Navegación y jerarquía
+
+- La sección Seguimiento pasa a llamarse Inicio.
+- El icono principal cambia a Home.
+- La cabecera tradicional se oculta en Inicio para que la portada sea la primera experiencia visible.
+- Las demás secciones conservan su cabecera funcional.
+- Búsqueda, filtros y lista de seguimiento permanecen debajo de la portada.
+
+### Publicación
+
+- Versión actualizada a `1.0.0` y código `7`.
+- Artefacto de GitHub Actions actualizado a `checkpoint-android-v1.0.0-debug`.
+- Nuevo workflow manual `release-apk.yml` para publicar `Checkpoint.apk` y su SHA-256 en GitHub Releases.
+- User-Agent actualizado a Checkpoint 1.0.0.
+
+### Pruebas y compatibilidad
+
+- Nuevas pruebas para selección de titular, movimiento de precios y generación de edición diaria.
+- No se modificó el esquema Room.
+- No se modificó el formato de respaldo.
+- Se conserva compatibilidad de actualización con 0.3.0 y 0.3.1 cuando utilizan la misma firma.
+
 ## 0.3.1 — Visual Harmony
 
 ### Legibilidad y accesibilidad

@@ -1,6 +1,50 @@
-plugins {
-    id("com.android.application") version "8.7.3" apply false
-    id("org.jetbrains.kotlin.android") version "2.0.21" apply false
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21" apply false
-    id("com.google.devtools.ksp") version "2.0.21-1.0.28" apply false
-}
+name: Build Checkpoint APK
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar proyecto
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Instalar SDK Android 35
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Dar permiso al wrapper
+        run: chmod +x gradlew
+
+      - name: Ejecutar pruebas
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      - name: Compilar APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Subir APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkpoint-android-v1.0.0-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error

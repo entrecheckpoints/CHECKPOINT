@@ -46,6 +46,7 @@ import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.FileUpload
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LibraryBooks
 import androidx.compose.material.icons.filled.LocalOffer
 import androidx.compose.material.icons.filled.Notifications
@@ -222,16 +223,19 @@ fun CheckpointAppRoot(viewModel: MainViewModel) {
                     .padding(padding)
                     .statusBarsPadding(),
             ) {
-                AppHeader(
-                    busy = busy,
-                    section = section,
-                    onAdd = { showAdd = true },
-                    onRefresh = viewModel::refreshAll,
-                )
+                if (section != AppSection.TRACKING) {
+                    AppHeader(
+                        busy = busy,
+                        section = section,
+                        onAdd = { showAdd = true },
+                        onRefresh = viewModel::refreshAll,
+                    )
+                }
                 when (section) {
                     AppSection.TRACKING -> TrackingScreen(
                         games = games,
                         historyByGame = historyByGame,
+                        events = events,
                         query = query,
                         storeFilter = storeFilter,
                         activeSubscriptions = activeSubscriptions,
@@ -240,6 +244,8 @@ fun CheckpointAppRoot(viewModel: MainViewModel) {
                         onStore = { viewModel.storeFilter.value = it },
                         onOpen = viewModel::selectGame,
                         onRefresh = viewModel::refreshGame,
+                        onRefreshAll = viewModel::refreshAll,
+                        onOpenDeals = { viewModel.navigate(AppSection.DEALS) },
                         onAdd = { showAdd = true },
                     )
                     AppSection.DEALS -> DealsScreen(
@@ -354,7 +360,7 @@ private fun AppHeader(
     ) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             TechnicalLabel("EC / PRICE TRACKING SYSTEM", color = style.muted)
-            TechnicalLabel("BUILD 03.1 · ${section.label}", color = style.muted)
+            TechnicalLabel("BUILD 1.0 · ${section.label}", color = style.muted)
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
@@ -381,7 +387,7 @@ private fun AppHeader(
             Spacer(Modifier.width(10.dp))
             Box(Modifier.weight(1f).height(1.dp).background(style.borderStrong))
             Spacer(Modifier.width(10.dp))
-            TechnicalLabel("ISSUE 003.1", color = style.ink)
+            TechnicalLabel("ISSUE 001.0", color = style.ink)
         }
     }
 }
@@ -402,7 +408,7 @@ private fun SectionNavigation(
         Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 5.dp)) {
             AppSection.entries.forEach { section ->
                 val icon = when (section) {
-                    AppSection.TRACKING -> Icons.Default.TrackChanges
+                    AppSection.TRACKING -> Icons.Default.Home
                     AppSection.DEALS -> Icons.Default.LocalOffer
                     AppSection.COMPARE -> Icons.Default.CompareArrows
                     AppSection.LIBRARY -> Icons.Default.LibraryBooks
@@ -453,7 +459,7 @@ private fun SectionNavigation(
 }
 
 private fun AppSection.navigationLabel(): String = when (this) {
-    AppSection.TRACKING -> "SEGUIR"
+    AppSection.TRACKING -> "INICIO"
     AppSection.DEALS -> "OFERTAS"
     AppSection.COMPARE -> "COMPARAR"
     AppSection.LIBRARY -> "BIBLIO"
@@ -463,6 +469,7 @@ private fun AppSection.navigationLabel(): String = when (this) {
 private fun TrackingScreen(
     games: List<GameEntity>,
     historyByGame: Map<String, List<PricePointEntity>>,
+    events: List<GameEventEntity>,
     query: String,
     storeFilter: Store?,
     activeSubscriptions: Set<SubscriptionService>,
@@ -471,6 +478,8 @@ private fun TrackingScreen(
     onStore: (Store?) -> Unit,
     onOpen: (String) -> Unit,
     onRefresh: (String) -> Unit,
+    onRefreshAll: () -> Unit,
+    onOpenDeals: () -> Unit,
     onAdd: () -> Unit,
 ) {
     val filtered = games.filter { game ->
@@ -483,12 +492,16 @@ private fun TrackingScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         item {
-            DashboardHero(
+            MagazineHome(
                 games = games,
                 historyByGame = historyByGame,
+                events = events,
                 activeSubscriptions = activeSubscriptions,
+                busy = busy,
                 onOpen = onOpen,
                 onAdd = onAdd,
+                onRefreshAll = onRefreshAll,
+                onOpenDeals = onOpenDeals,
             )
         }
         item {
@@ -519,92 +532,6 @@ private fun TrackingScreen(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun DashboardHero(
-    games: List<GameEntity>,
-    historyByGame: Map<String, List<PricePointEntity>>,
-    activeSubscriptions: Set<SubscriptionService>,
-    onOpen: (String) -> Unit,
-    onAdd: () -> Unit,
-) {
-    val style = CheckpointStyle.current
-    val featured = remember(games, historyByGame) {
-        games.maxByOrNull { game ->
-            val analytics = DealAnalytics.calculate(game, historyByGame[game.id].orEmpty())
-            analytics.dealScore + game.discountPercent / 12.0
-        }
-    }
-    val deals = games.count { it.discountPercent > 0 }
-    val targets = games.count { it.targetPriceCents != null && it.priceCents <= it.targetPriceCents }
-    val included = games.count { SubscriptionService.fromCsv(it.subscriptionTags).any(activeSubscriptions::contains) }
-
-    CheckpointPanel(Modifier.fillMaxWidth(), highlighted = true, padding = 0.dp) {
-        Row(
-            Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 11.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            TechnicalLabel("PRICE WATCH / LIVE", color = style.accentSecondary)
-            TechnicalLabel("${games.size.toString().padStart(2, '0')} TRACKED", color = style.ink)
-        }
-        HorizontalDivider(color = style.hairline)
-        if (featured == null) {
-            Column(
-                Modifier.fillMaxWidth().padding(18.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                TechnicalLabel("RADAR VACÍO", color = style.accentSecondary)
-                Text("Empieza tu lista de seguimiento", style = MaterialTheme.typography.headlineMedium)
-                Text("Agrega un enlace de Nintendo, Steam o Xbox. Checkpoint hará la vigilancia tediosa por ti.", color = style.muted)
-                Button(onClick = onAdd, shape = checkpointShape()) {
-                    Icon(Icons.Default.Add, contentDescription = null)
-                    Spacer(Modifier.width(6.dp))
-                    Text("AGREGAR PRIMER JUEGO")
-                }
-            }
-        } else {
-            val analytics = DealAnalytics.calculate(featured, historyByGame[featured.id].orEmpty())
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .clickable { onOpen(featured.id) }
-                    .padding(14.dp),
-                horizontalArrangement = Arrangement.spacedBy(13.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                GameCover(featured, Modifier.width(78.dp))
-                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                    TechnicalLabel("MEJOR OPORTUNIDAD AHORA", color = style.accentSecondary)
-                    Text(featured.title, style = MaterialTheme.typography.titleLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                    Row(verticalAlignment = Alignment.Bottom) {
-                        Text(formatPrice(featured.priceCents, featured.currency), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
-                        if (featured.discountPercent > 0) {
-                            Spacer(Modifier.width(8.dp))
-                            TechnicalLabel("-${featured.discountPercent}%", color = storeColor(Store.fromId(featured.storeId)))
-                        }
-                    }
-                    TechnicalLabel("${analytics.dealLabel} · score ${String.format(Locale.US, "%.1f", analytics.dealScore)}", color = style.muted)
-                }
-                Icon(Icons.Default.ArrowDropDown, contentDescription = "Abrir", tint = style.muted)
-            }
-        }
-        HorizontalDivider(color = style.hairline)
-        Row(Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 5.dp)) {
-            DashboardMetric("OFERTAS", deals.toString(), Modifier.weight(1f))
-            DashboardMetric("OBJETIVOS", targets.toString(), Modifier.weight(1f))
-            DashboardMetric("INCLUIDOS", included.toString(), Modifier.weight(1f))
-        }
-    }
-}
-
-@Composable
-private fun DashboardMetric(label: String, value: String, modifier: Modifier = Modifier) {
-    val style = CheckpointStyle.current
-    Column(modifier.padding(horizontal = 8.dp, vertical = 7.dp)) {
-        TechnicalLabel(label, color = style.muted)
-        Text(value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, color = style.ink)
     }
 }
 
